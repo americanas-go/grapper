@@ -4,8 +4,6 @@ import (
 	"context"
 )
 
-type ConstFunc[R any] func() Middleware[R]
-
 type Wrapper[R any] struct {
 	m []Middleware[R]
 }
