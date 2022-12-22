@@ -16,7 +16,6 @@ type Hystrix[R any] struct {
 func (c *Hystrix[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], returnFunc grapper.ReturnFunc[R]) (r R, err error) {
 	if err = hystrix.DoC(ctx.GetContext(), c.name,
 		func(ctxx context.Context) error {
-			log.FromContext(ctxx).Infof("executing hystrix")
 			r, err = ctx.Next(ctx, exec, returnFunc)
 			if err != nil {
 				return err
@@ -33,8 +32,14 @@ func (c *Hystrix[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], ret
 	return r, err
 }
 
-func New[R any](name string, cfg hystrix.CommandConfig) grapper.Middleware[R] {
+func NewWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.Middleware[R] {
 	hystrix.ConfigureCommand(name, cfg)
+	hystrix.SetLogger(log.GetLogger())
+
+	return &Hystrix[R]{name: name}
+}
+
+func New[R any](name string) grapper.Middleware[R] {
 	hystrix.SetLogger(log.GetLogger())
 
 	return &Hystrix[R]{name: name}
