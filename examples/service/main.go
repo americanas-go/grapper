@@ -40,7 +40,7 @@ func main() {
 
 	middlewares := []grapper.Middleware[Result]{
 		log.New[Result](),
-		h.New[Result]("XPTO", hystrix.CommandConfig{
+		h.NewWithConfig[Result]("XPTO", hystrix.CommandConfig{
 			Timeout:                10,
 			MaxConcurrentRequests:  6000,
 			RequestVolumeThreshold: 6000,
@@ -49,7 +49,7 @@ func main() {
 		}),
 	}
 
-	wrapper := grapper.New[Result](middlewares...)
+	wrapper := grapper.New[Result]("example", middlewares...)
 
 	foo := NewFooService(wrapper)
 	r, err = foo.FooMethod(ctx)

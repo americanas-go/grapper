@@ -5,7 +5,12 @@ import "context"
 type Context[R any] struct {
 	ctx   context.Context
 	m     []Middleware[R]
+	name  string
 	index int
+}
+
+func (c *Context[R]) GetName() string {
+	return c.name
 }
 
 func (c *Context[R]) GetContext() context.Context {
@@ -39,6 +44,6 @@ func (c *Context[R]) getNext() Middleware[R] {
 	return nil
 }
 
-func NewContext[R any](m ...Middleware[R]) *Context[R] {
-	return &Context[R]{m: m}
+func NewContext[R any](name string, m ...Middleware[R]) *Context[R] {
+	return &Context[R]{m: m, name: name}
 }

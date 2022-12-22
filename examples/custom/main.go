@@ -32,7 +32,7 @@ func main() {
 		NewCustomMiddleware[string](),
 	}
 
-	wrp := grapper.New[string](middlewares...)
+	wrp := grapper.New[string]("example", middlewares...)
 
 	res, err = wrp.Exec(ctx,
 		func(ctx context.Context) (string, error) {
