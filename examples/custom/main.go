@@ -10,9 +10,9 @@ import (
 
 type CustomMiddleware[R any] struct{}
 
-func (c *CustomMiddleware[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], returnFunc grapper.ReturnFunc[R]) (R, error) {
+func (c *CustomMiddleware[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], fallbackFunc grapper.FallbackFunc[R]) (R, error) {
 	fmt.Println("my custom middleware")
-	return ctx.Next(ctx, exec, returnFunc)
+	return ctx.Next(exec, fallbackFunc)
 }
 
 func NewCustomMiddleware[R any]() grapper.Middleware[R] {
@@ -34,7 +34,7 @@ func main() {
 
 	wrp := grapper.New[string]("example", middlewares...)
 
-	res, err = wrp.Exec(ctx,
+	res, err = wrp.Exec(ctx, "1",
 		func(ctx context.Context) (string, error) {
 			return "string", nil
 		}, nil)

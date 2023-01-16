@@ -7,6 +7,7 @@ type Context[R any] struct {
 	m     []Middleware[R]
 	name  string
 	index int
+	id    string
 }
 
 func (c *Context[R]) GetName() string {
@@ -21,11 +22,19 @@ func (c *Context[R]) SetContext(ctx context.Context) {
 	c.ctx = ctx
 }
 
-func (c *Context[R]) Next(ctx *Context[R], exec ExecFunc[R], returnFunc ReturnFunc[R]) (R, error) {
+func (c *Context[R]) SetID(id string) {
+	c.id = id
+}
+
+func (c *Context[R]) GetID() string {
+	return c.id
+}
+
+func (c *Context[R]) Next(exec ExecFunc[R], fallback FallbackFunc[R]) (R, error) {
 	if m := c.getNext(); m != nil {
-		return m.Exec(ctx, exec, returnFunc)
+		return m.Exec(c, exec, fallback)
 	}
-	return exec(ctx.GetContext())
+	return exec(c.GetContext())
 }
 
 func (c *Context[R]) hasNext() bool {
@@ -44,6 +53,6 @@ func (c *Context[R]) getNext() Middleware[R] {
 	return nil
 }
 
-func NewContext[R any](name string, m ...Middleware[R]) *Context[R] {
-	return &Context[R]{m: m, name: name}
+func NewContext[R any](name string, id string, m ...Middleware[R]) *Context[R] {
+	return &Context[R]{m: m, name: name, id: id}
 }

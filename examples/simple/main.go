@@ -33,7 +33,7 @@ func main() {
 
 	wrp := grapper.New[string]("example", middlewares...)
 
-	r, err = wrp.Exec(ctx,
+	r, err = wrp.Exec(ctx, "1",
 		func(ctx context.Context) (string, error) {
 			return "string", nil
 		}, nil)

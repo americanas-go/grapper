@@ -13,8 +13,8 @@ func New[R any](name string, m ...Middleware[R]) *Wrapper[R] {
 	return &Wrapper[R]{m: m, name: name}
 }
 
-func (w *Wrapper[R]) Exec(ctx context.Context, exec ExecFunc[R], returnFunc ReturnFunc[R]) (r R, err error) {
-	c := NewContext(w.name, w.m...)
+func (w *Wrapper[R]) Exec(ctx context.Context, id string, exec ExecFunc[R], returnFunc FallbackFunc[R]) (r R, err error) {
+	c := NewContext(w.name, id, w.m...)
 	c.SetContext(ctx)
-	return c.Next(c, exec, returnFunc)
+	return c.Next(exec, returnFunc)
 }

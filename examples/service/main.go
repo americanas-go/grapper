@@ -24,7 +24,7 @@ func NewFooService(wrapper *grapper.Wrapper[Result]) *FooService {
 }
 
 func (s *FooService) FooMethod(ctx context.Context) (Result, error) {
-	return s.wrapper.Exec(ctx, func(ctx context.Context) (Result, error) {
+	return s.wrapper.Exec(ctx, "1", func(ctx context.Context) (Result, error) {
 		return Result{Code: "XPTO"}, nil
 	}, nil)
 }
