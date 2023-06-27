@@ -16,10 +16,10 @@ type Result struct {
 }
 
 type FooService struct {
-	wrapper *grapper.Wrapper[Result]
+	wrapper *grapper.AnyErrorWrapper[Result]
 }
 
-func NewFooService(wrapper *grapper.Wrapper[Result]) *FooService {
+func NewFooService(wrapper *grapper.AnyErrorWrapper[Result]) *FooService {
 	return &FooService{wrapper: wrapper}
 }
 
@@ -38,9 +38,9 @@ func main() {
 	var r Result
 	var err error
 
-	middlewares := []grapper.Middleware[Result]{
-		log.New[Result](),
-		h.NewWithConfig[Result]("XPTO", hystrix.CommandConfig{
+	middlewares := []grapper.AnyErrorMiddleware[Result]{
+		log.NewAnyErrorMiddleware[Result](),
+		h.NewAnyErrorMiddlewareWithConfig[Result]("XPTO", hystrix.CommandConfig{
 			Timeout:                10,
 			MaxConcurrentRequests:  6000,
 			RequestVolumeThreshold: 6000,
@@ -49,7 +49,7 @@ func main() {
 		}),
 	}
 
-	wrapper := grapper.New[Result]("example", middlewares...)
+	wrapper := grapper.NewAnyErrorWrapper[Result]("example", middlewares...)
 
 	foo := NewFooService(wrapper)
 	r, err = foo.FooMethod(ctx)

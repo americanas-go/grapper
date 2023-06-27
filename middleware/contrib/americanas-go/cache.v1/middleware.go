@@ -1,4 +1,4 @@
-package log
+package cache
 
 import (
 	"context"
@@ -7,17 +7,33 @@ import (
 	"github.com/americanas-go/grapper"
 )
 
-type middleware[R any] struct {
+type anyErrorMiddleware[R any] struct {
 	manager *cache.Manager[R]
 	opts    []cache.OptionSet
 }
 
-func (m *middleware[R]) Exec(c *grapper.Context[R], exec grapper.ExecFunc[R], fallbackFunc grapper.FallbackFunc[R]) (R, error) {
+func (m *anyErrorMiddleware[R]) Exec(c *grapper.AnyErrorContext[R], exec grapper.AnyErrorExecFunc[R], returnFunc grapper.AnyErrorReturnFunc[R]) (R, error) {
 	return m.manager.GetOrSet(c.GetContext(), c.GetID(), func(ctx context.Context) (R, error) {
-		return c.Next(exec, fallbackFunc)
+		return c.Next(exec, returnFunc)
 	}, m.opts...)
 }
 
-func New[R any](manager *cache.Manager[R], opts ...cache.OptionSet) grapper.Middleware[R] {
-	return &middleware[R]{manager: manager, opts: opts}
+func NewAnyErrorMiddleware[R any](manager *cache.Manager[R], opts ...cache.OptionSet) grapper.AnyErrorMiddleware[R] {
+	return &anyErrorMiddleware[R]{manager: manager, opts: opts}
+}
+
+type anyMiddleware[R any] struct {
+	manager *cache.Manager[R]
+	opts    []cache.OptionSet
+}
+
+func (m *anyMiddleware[R]) Exec(c *grapper.AnyContext[R], exec grapper.AnyExecFunc[R], returnFunc grapper.AnyReturnFunc[R]) R {
+	d, _ := m.manager.GetOrSet(c.GetContext(), c.GetID(), func(ctx context.Context) (R, error) {
+		return c.Next(exec, returnFunc), nil
+	}, m.opts...)
+	return d
+}
+
+func NewAnyMiddleware[R any](manager *cache.Manager[R], opts ...cache.OptionSet) grapper.AnyMiddleware[R] {
+	return &anyMiddleware[R]{manager: manager, opts: opts}
 }

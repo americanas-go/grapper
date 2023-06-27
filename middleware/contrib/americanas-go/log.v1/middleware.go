@@ -5,15 +5,41 @@ import (
 	"github.com/americanas-go/log"
 )
 
-type middleware[R any] struct{}
+type anyErrorMiddleware[R any] struct{}
 
-func (c *middleware[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], fallbackFunc grapper.FallbackFunc[R]) (R, error) {
+func (c *anyErrorMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapper.AnyErrorExecFunc[R], returnFunc grapper.AnyErrorReturnFunc[R]) (r R, err error) {
 	l := log.FromContext(ctx.GetContext())
 	l.Tracef("executing wrapper %s", ctx.GetName())
-	defer l.Tracef("wrapper %s executed", ctx.GetName())
-	return ctx.Next(exec, fallbackFunc)
+	defer l.Debugf("wrapper %s executed", ctx.GetName())
+	return ctx.Next(exec, returnFunc)
 }
 
-func New[R any]() grapper.Middleware[R] {
-	return &middleware[R]{}
+func NewAnyErrorMiddleware[R any]() grapper.AnyErrorMiddleware[R] {
+	return &anyErrorMiddleware[R]{}
+}
+
+type anyMiddleware[R any] struct{}
+
+func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExecFunc[R], returnFunc grapper.AnyReturnFunc[R]) (r R) {
+	l := log.FromContext(ctx.GetContext())
+	l.Tracef("executing wrapper %s", ctx.GetName())
+	defer l.Debugf("wrapper %s executed", ctx.GetName())
+	return ctx.Next(exec, returnFunc)
+}
+
+func NewAnyMiddleware[R any]() grapper.AnyErrorMiddleware[R] {
+	return &anyErrorMiddleware[R]{}
+}
+
+type errorMiddleware struct{}
+
+func (c *errorMiddleware) Exec(ctx *grapper.ErrorContext, exec grapper.ErrorExecFunc, returnFunc grapper.ErrorReturnFunc) (err error) {
+	l := log.FromContext(ctx.GetContext())
+	l.Tracef("executing wrapper %s", ctx.GetName())
+	defer l.Debugf("wrapper %s executed", ctx.GetName())
+	return ctx.Next(exec, returnFunc)
+}
+
+func NewErrorMiddleware() grapper.ErrorMiddleware {
+	return &errorMiddleware{}
 }

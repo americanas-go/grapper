@@ -23,10 +23,10 @@ type Result struct {
 }
 
 type FooService struct {
-	wrapper *grapper.Wrapper[Result]
+	wrapper *grapper.AnyErrorWrapper[Result]
 }
 
-func NewFooService(wrapper *grapper.Wrapper[Result]) *FooService {
+func NewFooService(wrapper *grapper.AnyErrorWrapper[Result]) *FooService {
 	return &FooService{wrapper: wrapper}
 }
 
@@ -72,12 +72,12 @@ func main() {
 	cachem.Use(mid_cache_log.New[Result]())
 
 	// GRAPPER
-	middlewares := []grapper.Middleware[Result]{
-		mid_grapper_cache.New[Result](cachem, cache.SaveEmpty, cache.AsyncSave),
-		mid_grapper_fallback.New[Result](),
+	middlewares := []grapper.AnyErrorMiddleware[Result]{
+		mid_grapper_cache.NewAnyErrorMiddleware[Result](cachem, cache.SaveEmpty, cache.AsyncSave),
+		mid_grapper_fallback.NewAnyErrorMiddleware[Result](),
 	}
 
-	wrapper := grapper.New[Result]("XPTO", middlewares...)
+	wrapper := grapper.NewAnyErrorWrapper[Result]("XPTO", middlewares...)
 
 	foo := NewFooService(wrapper)
 	r, err = foo.FooMethod(ctx)

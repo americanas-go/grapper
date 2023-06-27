@@ -9,21 +9,21 @@ import (
 	"github.com/americanas-go/log"
 )
 
-type middleware[R any] struct {
+type anyErrorMiddleware[R any] struct {
 	name string
 }
 
-func (c *middleware[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], fallbackFunc grapper.FallbackFunc[R]) (r R, err error) {
+func (c *anyErrorMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapper.AnyErrorExecFunc[R], returnFunc grapper.AnyErrorReturnFunc[R]) (r R, err error) {
 	if err = hystrix.DoC(ctx.GetContext(), c.name,
 		func(ctxx context.Context) error {
-			r, err = ctx.Next(exec, fallbackFunc)
+			r, err = ctx.Next(exec, returnFunc)
 			if err != nil {
 				return err
 			}
 			return nil
 		},
 		func(ctxx context.Context, errr error) error {
-			r, err = fallbackFunc(ctxx, r, errr)
+			r, err = returnFunc(ctxx, r, errr)
 			return err
 		}); err != nil {
 		return r, errors.Annotate(err, "error during execute hystrix circuit breaker")
@@ -32,15 +32,67 @@ func (c *middleware[R]) Exec(ctx *grapper.Context[R], exec grapper.ExecFunc[R], 
 	return r, err
 }
 
-func NewWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.Middleware[R] {
+func NewAnyErrorMiddlewareWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.AnyErrorMiddleware[R] {
 	hystrix.ConfigureCommand(name, cfg)
 	hystrix.SetLogger(log.GetLogger())
-
-	return &middleware[R]{name: name}
+	return &anyErrorMiddleware[R]{name: name}
 }
 
-func New[R any](name string) grapper.Middleware[R] {
+func NewAnyErrorMiddleware[R any](name string) grapper.AnyErrorMiddleware[R] {
 	hystrix.SetLogger(log.GetLogger())
+	return &anyErrorMiddleware[R]{name: name}
+}
 
-	return &middleware[R]{name: name}
+type anyMiddleware[R any] struct {
+	name string
+}
+
+func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExecFunc[R], returnFunc grapper.AnyReturnFunc[R]) (r R) {
+	hystrix.DoC(ctx.GetContext(), c.name,
+		func(ctxx context.Context) error {
+			r = ctx.Next(exec, returnFunc)
+			return nil
+		},
+		func(ctxx context.Context, errr error) error {
+			r = returnFunc(ctxx, r)
+			return errr
+		})
+	return r
+}
+
+func NewAnyMiddlewareWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.AnyErrorMiddleware[R] {
+	hystrix.ConfigureCommand(name, cfg)
+	hystrix.SetLogger(log.GetLogger())
+	return &anyErrorMiddleware[R]{name: name}
+}
+
+func NewAnyMiddleware[R any](name string) grapper.AnyErrorMiddleware[R] {
+	hystrix.SetLogger(log.GetLogger())
+	return &anyErrorMiddleware[R]{name: name}
+}
+
+type errorMiddleware struct {
+	name string
+}
+
+func (c *errorMiddleware) Exec(ctx *grapper.ErrorContext, exec grapper.ErrorExecFunc, returnFunc grapper.ErrorReturnFunc) (err error) {
+	err = hystrix.DoC(ctx.GetContext(), c.name,
+		func(ctxx context.Context) error {
+			return ctx.Next(exec, returnFunc)
+		},
+		func(ctxx context.Context, errr error) error {
+			return returnFunc(ctxx, errr)
+		})
+	return err
+}
+
+func NewErrorMiddlewareWithConfig(name string, cfg hystrix.CommandConfig) grapper.ErrorMiddleware {
+	hystrix.ConfigureCommand(name, cfg)
+	hystrix.SetLogger(log.GetLogger())
+	return &errorMiddleware{name: name}
+}
+
+func NewErrorMiddleware(name string) grapper.ErrorMiddleware {
+	hystrix.SetLogger(log.GetLogger())
+	return &errorMiddleware{name: name}
 }

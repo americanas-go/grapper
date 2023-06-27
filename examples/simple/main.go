@@ -20,9 +20,9 @@ func main() {
 	var r string
 	var err error
 
-	middlewares := []grapper.Middleware[string]{
-		log.New[string](),
-		h.NewWithConfig[string]("XPTO", hystrix.CommandConfig{
+	middlewares := []grapper.AnyErrorMiddleware[string]{
+		log.NewAnyErrorMiddleware[string](),
+		h.NewAnyErrorMiddlewareWithConfig[string]("XPTO", hystrix.CommandConfig{
 			Timeout:                10,
 			MaxConcurrentRequests:  6000,
 			RequestVolumeThreshold: 6000,
@@ -31,7 +31,7 @@ func main() {
 		}),
 	}
 
-	wrp := grapper.New[string]("example", middlewares...)
+	wrp := grapper.NewAnyErrorWrapper[string]("example", middlewares...)
 
 	r, err = wrp.Exec(ctx, "1",
 		func(ctx context.Context) (string, error) {
