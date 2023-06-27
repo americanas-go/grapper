@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/americanas-go/cache v1.0.0-beta.11
-	github.com/americanas-go/errors v1.1.0
+	github.com/americanas-go/errors v1.1.1
 	github.com/americanas-go/log v1.8.8
 	github.com/coocood/freecache v1.2.3
 	gopkg.in/DataDog/dd-trace-go.v1 v1.50.1
