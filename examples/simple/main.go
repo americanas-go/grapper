@@ -31,7 +31,7 @@ func main() {
 		}),
 	}
 
-	wrp := grapper.NewAnyErrorWrapper[string]("example", middlewares...)
+	wrp := grapper.NewAnyErrorWrapper[string](ctx, "example", middlewares...)
 
 	r, err = wrp.Exec(ctx, "1",
 		func(ctx context.Context) (string, error) {

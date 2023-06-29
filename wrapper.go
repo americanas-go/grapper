@@ -9,7 +9,7 @@ type AnyErrorWrapper[R any] struct {
 	name string
 }
 
-func NewAnyErrorWrapper[R any](name string, m ...AnyErrorMiddleware[R]) *AnyErrorWrapper[R] {
+func NewAnyErrorWrapper[R any](ctx context.Context, name string, m ...AnyErrorMiddleware[R]) *AnyErrorWrapper[R] {
 	return &AnyErrorWrapper[R]{m: m, name: name}
 }
 
@@ -24,7 +24,7 @@ type AnyWrapper[R any] struct {
 	name string
 }
 
-func NewAnyWrapper[R any](name string, m ...AnyMiddleware[R]) *AnyWrapper[R] {
+func NewAnyWrapper[R any](ctx context.Context, name string, m ...AnyMiddleware[R]) *AnyWrapper[R] {
 	return &AnyWrapper[R]{m: m, name: name}
 }
 
@@ -39,7 +39,7 @@ type ErrorWrapper struct {
 	name string
 }
 
-func NewErrorWrapper[R any](name string, m ...ErrorMiddleware) *ErrorWrapper {
+func NewErrorWrapper[R any](ctx context.Context, name string, m ...ErrorMiddleware) *ErrorWrapper {
 	return &ErrorWrapper{m: m, name: name}
 }
 

@@ -49,7 +49,7 @@ func main() {
 		}),
 	}
 
-	wrapper := grapper.NewAnyErrorWrapper[Result]("example", middlewares...)
+	wrapper := grapper.NewAnyErrorWrapper[Result](ctx, "example", middlewares...)
 
 	foo := NewFooService(wrapper)
 	r, err = foo.FooMethod(ctx)
