@@ -45,8 +45,8 @@ func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExec
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewAnyMiddleware[R any](name string, tp string) grapper.AnyErrorMiddleware[R] {
-	return &anyErrorMiddleware[R]{name: name, tp: tp}
+func NewAnyMiddleware[R any](name string, tp string) grapper.AnyMiddleware[R] {
+	return &anyMiddleware[R]{name: name, tp: tp}
 }
 
 type errorMiddleware struct {

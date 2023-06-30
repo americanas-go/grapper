@@ -60,15 +60,15 @@ func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExec
 	return r
 }
 
-func NewAnyMiddlewareWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.AnyErrorMiddleware[R] {
+func NewAnyMiddlewareWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.AnyMiddleware[R] {
 	hystrix.ConfigureCommand(name, cfg)
 	hystrix.SetLogger(log.GetLogger())
-	return &anyErrorMiddleware[R]{name: name}
+	return &anyMiddleware[R]{name: name}
 }
 
-func NewAnyMiddleware[R any](name string) grapper.AnyErrorMiddleware[R] {
+func NewAnyMiddleware[R any](name string) grapper.AnyMiddleware[R] {
 	hystrix.SetLogger(log.GetLogger())
-	return &anyErrorMiddleware[R]{name: name}
+	return &anyMiddleware[R]{name: name}
 }
 
 type errorMiddleware struct {
