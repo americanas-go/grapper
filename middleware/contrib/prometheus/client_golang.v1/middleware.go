@@ -53,10 +53,10 @@ var (
 	}, []string{"name"})
 )
 
-type anyErrorCounterMiddleware[R any] struct {
+type anyErrorMiddleware[R any] struct {
 }
 
-func (c *anyErrorCounterMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapper.AnyErrorExecFunc[R], returnFunc grapper.AnyErrorReturnFunc[R]) (r R, err error) {
+func (c *anyErrorMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapper.AnyErrorExecFunc[R], returnFunc grapper.AnyErrorReturnFunc[R]) (r R, err error) {
 	opsTotalProcessed.WithLabelValues(ctx.GetName()).Inc()
 	timer := prometheus.NewTimer(opsDuration.WithLabelValues(ctx.GetName()))
 	defer timer.ObserveDuration()
@@ -68,7 +68,7 @@ func (c *anyErrorCounterMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exe
 }
 
 func NewAnyErrorMiddleware[R any](ctx context.Context) grapper.AnyErrorMiddleware[R] {
-	return &anyErrorCounterMiddleware[R]{}
+	return &anyErrorMiddleware[R]{}
 }
 
 type anyMiddleware[R any] struct {
@@ -81,8 +81,8 @@ func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExec
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewAnyMiddleware[R any](ctx context.Context) grapper.AnyErrorMiddleware[R] {
-	return &anyErrorCounterMiddleware[R]{}
+func NewAnyMiddleware[R any](ctx context.Context) grapper.AnyMiddleware[R] {
+	return &anyMiddleware[R]{}
 }
 
 type errorMiddleware struct {
