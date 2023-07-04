@@ -39,7 +39,7 @@ type ErrorWrapper struct {
 	name string
 }
 
-func NewErrorWrapper[R any](ctx context.Context, name string, m ...ErrorMiddleware) *ErrorWrapper {
+func NewErrorWrapper(ctx context.Context, name string, m ...ErrorMiddleware) *ErrorWrapper {
 	return &ErrorWrapper{m: m, name: name}
 }
 
