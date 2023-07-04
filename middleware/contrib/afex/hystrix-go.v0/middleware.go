@@ -32,13 +32,13 @@ func (c *anyErrorMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapp
 	return r, err
 }
 
-func NewAnyErrorMiddlewareWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.AnyErrorMiddleware[R] {
+func NewAnyErrorMiddlewareWithConfig[R any](ctx context.Context, name string, cfg hystrix.CommandConfig) grapper.AnyErrorMiddleware[R] {
 	hystrix.ConfigureCommand(name, cfg)
 	hystrix.SetLogger(log.GetLogger())
 	return &anyErrorMiddleware[R]{name: name}
 }
 
-func NewAnyErrorMiddleware[R any](name string) grapper.AnyErrorMiddleware[R] {
+func NewAnyErrorMiddleware[R any](ctx context.Context, name string) grapper.AnyErrorMiddleware[R] {
 	hystrix.SetLogger(log.GetLogger())
 	return &anyErrorMiddleware[R]{name: name}
 }
@@ -60,13 +60,13 @@ func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExec
 	return r
 }
 
-func NewAnyMiddlewareWithConfig[R any](name string, cfg hystrix.CommandConfig) grapper.AnyMiddleware[R] {
+func NewAnyMiddlewareWithConfig[R any](ctx context.Context, name string, cfg hystrix.CommandConfig) grapper.AnyMiddleware[R] {
 	hystrix.ConfigureCommand(name, cfg)
 	hystrix.SetLogger(log.GetLogger())
 	return &anyMiddleware[R]{name: name}
 }
 
-func NewAnyMiddleware[R any](name string) grapper.AnyMiddleware[R] {
+func NewAnyMiddleware[R any](ctx context.Context, name string) grapper.AnyMiddleware[R] {
 	hystrix.SetLogger(log.GetLogger())
 	return &anyMiddleware[R]{name: name}
 }
@@ -86,13 +86,13 @@ func (c *errorMiddleware) Exec(ctx *grapper.ErrorContext, exec grapper.ErrorExec
 	return err
 }
 
-func NewErrorMiddlewareWithConfig(name string, cfg hystrix.CommandConfig) grapper.ErrorMiddleware {
+func NewErrorMiddlewareWithConfig(ctx context.Context, name string, cfg hystrix.CommandConfig) grapper.ErrorMiddleware {
 	hystrix.ConfigureCommand(name, cfg)
 	hystrix.SetLogger(log.GetLogger())
 	return &errorMiddleware{name: name}
 }
 
-func NewErrorMiddleware(name string) grapper.ErrorMiddleware {
+func NewErrorMiddleware(ctx context.Context, name string) grapper.ErrorMiddleware {
 	hystrix.SetLogger(log.GetLogger())
 	return &errorMiddleware{name: name}
 }

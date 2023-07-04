@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"github.com/americanas-go/grapper"
 	"github.com/americanas-go/log"
 )
@@ -14,7 +15,7 @@ func (c *anyErrorMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapp
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewAnyErrorMiddleware[R any]() grapper.AnyErrorMiddleware[R] {
+func NewAnyErrorMiddleware[R any](ctx context.Context) grapper.AnyErrorMiddleware[R] {
 	return &anyErrorMiddleware[R]{}
 }
 
@@ -27,7 +28,7 @@ func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExec
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewAnyMiddleware[R any]() grapper.AnyMiddleware[R] {
+func NewAnyMiddleware[R any](ctx context.Context) grapper.AnyMiddleware[R] {
 	return &anyMiddleware[R]{}
 }
 
@@ -40,6 +41,6 @@ func (c *errorMiddleware) Exec(ctx *grapper.ErrorContext, exec grapper.ErrorExec
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewErrorMiddleware() grapper.ErrorMiddleware {
+func NewErrorMiddleware(ctx context.Context) grapper.ErrorMiddleware {
 	return &errorMiddleware{}
 }

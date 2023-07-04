@@ -1,6 +1,7 @@
 package datadog
 
 import (
+	"context"
 	"github.com/americanas-go/grapper"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
@@ -23,7 +24,7 @@ func (c *anyErrorMiddleware[R]) Exec(ctx *grapper.AnyErrorContext[R], exec grapp
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewAnyErrorMiddleware[R any](name string, tp string) grapper.AnyErrorMiddleware[R] {
+func NewAnyErrorMiddleware[R any](ctx context.Context, name string, tp string) grapper.AnyErrorMiddleware[R] {
 	return &anyErrorMiddleware[R]{name: name, tp: tp}
 }
 
@@ -45,7 +46,7 @@ func (c *anyMiddleware[R]) Exec(ctx *grapper.AnyContext[R], exec grapper.AnyExec
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewAnyMiddleware[R any](name string, tp string) grapper.AnyMiddleware[R] {
+func NewAnyMiddleware[R any](ctx context.Context, name string, tp string) grapper.AnyMiddleware[R] {
 	return &anyMiddleware[R]{name: name, tp: tp}
 }
 
@@ -67,6 +68,6 @@ func (c *errorMiddleware) Exec(ctx *grapper.ErrorContext, exec grapper.ErrorExec
 	return ctx.Next(exec, returnFunc)
 }
 
-func NewErrorMiddleware(name string, tp string) grapper.ErrorMiddleware {
+func NewErrorMiddleware(ctx context.Context, name string, tp string) grapper.ErrorMiddleware {
 	return &errorMiddleware{name: name, tp: tp}
 }

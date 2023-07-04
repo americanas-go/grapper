@@ -18,7 +18,7 @@ func (m *anyErrorMiddleware[R]) Exec(c *grapper.AnyErrorContext[R], exec grapper
 	}, m.opts...)
 }
 
-func NewAnyErrorMiddleware[R any](manager *cache.Manager[R], opts ...cache.OptionSet) grapper.AnyErrorMiddleware[R] {
+func NewAnyErrorMiddleware[R any](ctx context.Context, manager *cache.Manager[R], opts ...cache.OptionSet) grapper.AnyErrorMiddleware[R] {
 	return &anyErrorMiddleware[R]{manager: manager, opts: opts}
 }
 
@@ -34,6 +34,6 @@ func (m *anyMiddleware[R]) Exec(c *grapper.AnyContext[R], exec grapper.AnyExecFu
 	return d
 }
 
-func NewAnyMiddleware[R any](manager *cache.Manager[R], opts ...cache.OptionSet) grapper.AnyMiddleware[R] {
+func NewAnyMiddleware[R any](ctx context.Context, manager *cache.Manager[R], opts ...cache.OptionSet) grapper.AnyMiddleware[R] {
 	return &anyMiddleware[R]{manager: manager, opts: opts}
 }
