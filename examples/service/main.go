@@ -39,8 +39,8 @@ func main() {
 	var err error
 
 	middlewares := []grapper.AnyErrorMiddleware[Result]{
-		log.NewAnyErrorMiddleware[Result](),
-		h.NewAnyErrorMiddlewareWithConfig[Result]("XPTO", hystrix.CommandConfig{
+		log.NewAnyErrorMiddleware[Result](ctx),
+		h.NewAnyErrorMiddlewareWithConfig[Result](ctx, "XPTO", hystrix.CommandConfig{
 			Timeout:                10,
 			MaxConcurrentRequests:  6000,
 			RequestVolumeThreshold: 6000,
