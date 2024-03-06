@@ -73,11 +73,11 @@ func main() {
 
 	// GRAPPER
 	middlewares := []grapper.AnyErrorMiddleware[Result]{
-		mid_grapper_cache.NewAnyErrorMiddleware[Result](cachem, cache.SaveEmpty, cache.AsyncSave),
+		mid_grapper_cache.NewAnyErrorMiddleware[Result](ctx, cachem, cache.SaveEmpty, cache.AsyncSave),
 		mid_grapper_fallback.NewAnyErrorMiddleware[Result](),
 	}
 
-	wrapper := grapper.NewAnyErrorWrapper[Result]("XPTO", middlewares...)
+	wrapper := grapper.NewAnyErrorWrapper[Result](ctx, "XPTO", middlewares...)
 
 	foo := NewFooService(wrapper)
 	r, err = foo.FooMethod(ctx)
